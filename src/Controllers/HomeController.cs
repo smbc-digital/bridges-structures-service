@@ -1,6 +1,10 @@
+using bridges_structures_service.Models;
+using bridges_structures_service.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using StockportGovUK.AspNetCore.Attributes.TokenAuthentication;
 using StockportGovUK.AspNetCore.Availability.Managers;
+using System.Threading.Tasks;
 
 namespace bridges_structures_service.Controllers
 {
@@ -10,23 +14,21 @@ namespace bridges_structures_service.Controllers
     [TokenAuthentication]
     public class HomeController : ControllerBase
     {
-        private IAvailabilityManager _availabilityManager;
-        
-        public HomeController(IAvailabilityManager availabilityManager)
-        {
-            _availabilityManager = availabilityManager;
-        }
+        private readonly ILogger<HomeController> _logger;
+        private readonly IBridgesStructuresService _bridgesStructuresService;
 
-        [HttpGet]
-        public IActionResult Get()
+        public HomeController(ILogger<HomeController> logger, IBridgesStructuresService bridgesStructuresService)
         {
-            return Ok();
+            _logger = logger;
+            _bridgesStructuresService = bridgesStructuresService;
         }
 
         [HttpPost]
-        public IActionResult Post()
+        public async Task<IActionResult> Post([FromBody]BridgesStructuresReport bridgesStructuresReport)
         {
-            return Ok();
+            string result = await _bridgesStructuresService.CreateCase(bridgesStructuresReport);
+
+            return Ok(result);
         }
     }
 }

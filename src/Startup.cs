@@ -11,6 +11,7 @@ using StockportGovUK.AspNetCore.Middleware;
 using StockportGovUK.AspNetCore.Availability;
 using StockportGovUK.AspNetCore.Availability.Middleware;
 using StockportGovUK.NetStandard.Gateways;
+using bridges_structures_service.Config;
 
 namespace bridges_structures_service
 {
@@ -31,9 +32,12 @@ namespace bridges_structures_service
             services.AddStorageProvider(Configuration);
             services.AddResilientHttpClients<IGateway, Gateway>(Configuration);
             services.AddAvailability();
+            services.RegisterServices();
             services.AddSwagger();
             services.AddHealthChecks()
                     .AddCheck<TestHealthCheck>("TestHealthCheck");
+
+            services.Configure<BridgesStructuresListConfiguration>(Configuration.GetSection("BridgesStructuresConfiguration"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -59,7 +63,7 @@ namespace bridges_structures_service
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("v1/swagger.json", "bridges_structures_service API");
+                c.SwaggerEndpoint("v1/swagger.json", "Bridges Structures Service API");
             });
         }
     }
