@@ -1,5 +1,4 @@
 ﻿using StockportGovUK.NetStandard.Models.Addresses;
-using System.Collections.Generic;
 
 namespace bridges_structures_service.Models
 {

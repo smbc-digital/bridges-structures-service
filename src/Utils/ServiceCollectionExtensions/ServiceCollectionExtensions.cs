@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using bridges_structures_service.Helpers;
+﻿using bridges_structures_service.Helpers;
 using bridges_structures_service.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
 
 namespace bridges_structures_service.Utils.ServiceCollectionExtensions
 {
@@ -10,7 +10,7 @@ namespace bridges_structures_service.Utils.ServiceCollectionExtensions
     {
         public static void RegisterServices(this IServiceCollection services)
         {
-            //services.AddSingleton<IMailHelper, MailHelper>();
+            services.AddSingleton<IMailHelper, MailHelper>();
             services.AddTransient<IBridgesStructuresService, BridgesStructuresService>();
         }
         public static void AddSwagger(this IServiceCollection services)

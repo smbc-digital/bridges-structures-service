@@ -1,5 +1,4 @@
-﻿using System;
-namespace bridges_structures_service.Controllers.HealthCheck.Models
+﻿namespace bridges_structures_service.Controllers.HealthCheck.Models
 {
     public class HealthCheckModel
     {

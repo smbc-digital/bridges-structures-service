@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using bridges_structures_service.Config;
 using bridges_structures_service.Utils.HealthChecks;
 using bridges_structures_service.Utils.ServiceCollectionExtensions;
 using bridges_structures_service.Utils.StorageProvider;
@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StockportGovUK.AspNetCore.Middleware;
 using StockportGovUK.AspNetCore.Availability;
 using StockportGovUK.AspNetCore.Availability.Middleware;
+using StockportGovUK.AspNetCore.Middleware;
 using StockportGovUK.NetStandard.Gateways;
-using bridges_structures_service.Config;
+using System.Diagnostics.CodeAnalysis;
 
 namespace bridges_structures_service
 {
@@ -57,7 +57,7 @@ namespace bridges_structures_service
 
             app.UseMiddleware<Availability>();
             app.UseMiddleware<ApiExceptionHandling>();
-            
+
             app.UseHealthChecks("/healthcheck", HealthCheckConfig.Options);
 
             app.UseSwagger();

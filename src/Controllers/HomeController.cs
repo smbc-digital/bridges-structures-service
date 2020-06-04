@@ -3,7 +3,6 @@ using bridges_structures_service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using StockportGovUK.AspNetCore.Attributes.TokenAuthentication;
-using StockportGovUK.AspNetCore.Availability.Managers;
 using System.Threading.Tasks;
 
 namespace bridges_structures_service.Controllers

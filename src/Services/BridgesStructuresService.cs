@@ -6,44 +6,41 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StockportGovUK.NetStandard.Gateways.VerintServiceGateway;
-using StockportGovUK.NetStandard.Models.Enums;
 using StockportGovUK.NetStandard.Models.Verint;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace bridges_structures_service.Services
 {
-    public class BridgesStructuresService :IBridgesStructuresService
+    public class BridgesStructuresService : IBridgesStructuresService
     {
         private readonly IVerintServiceGateway _VerintServiceGateway;
         private readonly IConfiguration configuration;
         private readonly ILogger<BridgesStructuresService> _logger;
         private readonly IOptions<BridgesStructuresListConfiguration> _bridgesStructuresConfig;
-       // private readonly IMailHelper _mailHelper;
+        private readonly IMailHelper _mailHelper;
 
         public BridgesStructuresService(IVerintServiceGateway verintServiceGateway
                                         , IConfiguration iConfig
                                         , ILogger<BridgesStructuresService> logger
-                                        , IOptions<BridgesStructuresListConfiguration> bridgesStructuresConfig)
-                                        //, IMailHelper mailHelper)
+                                        , IOptions<BridgesStructuresListConfiguration> bridgesStructuresConfig
+                                        , IMailHelper mailHelper)
         {
             _VerintServiceGateway = verintServiceGateway;
             configuration = iConfig;
             _logger = logger;
             _bridgesStructuresConfig = bridgesStructuresConfig;
-            //_mailHelper = mailHelper;
+            _mailHelper = mailHelper;
         }
 
         public async Task<string> CreateCase(BridgesStructuresReport bridgesStructuresReport)
         {
-            var crmCase = CreateCrmCaseObject(bridgesStructuresReport);
+            Case crmCase = CreateCrmCaseObject(bridgesStructuresReport);
 
             try
             {
-                var response = await _VerintServiceGateway.CreateCase(crmCase);
+                StockportGovUK.NetStandard.Gateways.Response.HttpResponse<string> response = await _VerintServiceGateway.CreateCase(crmCase);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -71,22 +68,26 @@ namespace bridges_structures_service.Services
         private Case CreateCrmCaseObject(BridgesStructuresReport bridgesStructuresReport)
         {
             var events = _bridgesStructuresConfig.Value.BridgesStructuresConfigurations;
-            //foreach (var item in events)
-            //{
 
-            //}
-
-            //List<Structure> test = events.Where(e => e.ClassificationMap.Structures);
-
-            //check that affected strcuture equals to event Name, then use the event code for that event name
-            
-            //var eventCode = events.FirstOrDefault(_ => _.EventName == bridgesStructuresReport.StructureAffected).EventCode;
-
-            var crmCase = new Case
+            BridgesStructuresConfiguration bridgesStructuresInfo = new BridgesStructuresConfiguration();
+            foreach (var e in events)
             {
-                //EventCode = eventCode,
+                if (e.AffectedStructure == bridgesStructuresReport.StructureAffected &&
+                    e.TypeOfRequest == bridgesStructuresReport.TypeOfRequest)
+                {
+                    bridgesStructuresInfo.AffectedStructure = e.AffectedStructure;
+                    bridgesStructuresInfo.TypeOfRequest = e.TypeOfRequest;
+                    bridgesStructuresInfo.Code = e.Code;
+                    bridgesStructuresInfo.Name = e.Name;
+                    bridgesStructuresInfo.Classification = e.Classification;
+                }
+            }
+
+            Case crmCase = new Case
+            {
+                EventCode = int.Parse(bridgesStructuresInfo.Code),
                 EventTitle = configuration.GetSection("CrmCaseSettings").GetSection("EventTitle").Value,
-                Classification = configuration.GetSection("CrmCaseSettings").GetSection("Classification").Value,
+                Classification = bridgesStructuresInfo.Classification,
                 Description = GenerateDescription(bridgesStructuresReport),
                 Street = new Street
                 {
@@ -127,7 +128,7 @@ namespace bridges_structures_service.Services
 
             //return description.ToString();
 
-            var description = $"Enquiry Subject: {bridgesStructuresReport.GeneralEnquiry} " +
+            string description = $"Enquiry Subject: {bridgesStructuresReport.GeneralEnquiry} " +
                 $"\nDamage additional information: {bridgesStructuresReport.Details} " +
                 $"\nLocation additional information: {bridgesStructuresReport.FurtherInformation}";
 

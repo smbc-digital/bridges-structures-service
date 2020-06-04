@@ -1,6 +1,4 @@
-﻿using StockportGovUK.NetStandard.Models.Addresses;
-
-namespace bridges_structures_service.Models
+﻿namespace bridges_structures_service.Models
 {
     public class Person
     {

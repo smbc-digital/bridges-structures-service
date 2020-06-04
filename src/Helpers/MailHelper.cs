@@ -7,7 +7,7 @@ using StockportGovUK.NetStandard.Models.Mail;
 
 namespace bridges_structures_service.Helpers
 {
-    public class MailHelper
+    public class MailHelper : IMailHelper
     {
         private readonly IMailingServiceGateway _mailingServiceGateway;
 
