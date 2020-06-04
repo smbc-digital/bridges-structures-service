@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\bridges_structures_service.csproj" />
+    <ProjectReference Include="..\src\bridges-structures-service.csproj" />
   </ItemGroup>
 
 </Project>
