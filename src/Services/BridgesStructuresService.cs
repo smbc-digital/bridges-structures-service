@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StockportGovUK.NetStandard.Gateways.VerintServiceGateway;
+using StockportGovUK.NetStandard.Models.Enums;
 using StockportGovUK.NetStandard.Models.Verint;
 using System;
 using System.Collections.Generic;
@@ -55,8 +56,7 @@ namespace bridges_structures_service.Services
                     Phone = bridgesStructuresReport.Phone,
                 };
 
-                //TODO
-                //_mailHelper.SendEmail(person, EMailTemplate.BridgesStructuresReport, response.ResponseContent);
+                _mailHelper.SendEmail(person, EMailTemplate.BridgesStructuresReport, response.ResponseContent);
                 return response.ResponseContent;
             }
             catch (Exception ex)
