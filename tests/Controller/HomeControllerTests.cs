@@ -1,5 +1,7 @@
 using bridges_structures_service.Controllers;
+using bridges_structures_service.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using StockportGovUK.AspNetCore.Availability.Managers;
 using Xunit;
@@ -9,40 +11,11 @@ namespace bridges_structures_service_tests.Controllers
     public class HomeControllerTests
     {
         private readonly HomeController _homeController;
-        private readonly Mock<IAvailabilityManager> _mockAvailabilityManager = new Mock<IAvailabilityManager>();
+        private readonly Mock<IBridgesStructuresService> _mockBridgesStructuresService = new Mock<IBridgesStructuresService>();
 
         public HomeControllerTests()
         {
-            _homeController = new HomeController(_mockAvailabilityManager.Object);
-        }
-
-        [Fact]
-        public void Get_ShouldReturnOK()
-        {
-            // Act
-            var response = _homeController.Get();
-            var statusResponse = response as OkResult;
-            
-            // Assert
-            Assert.NotNull(statusResponse);
-            Assert.Equal(200, statusResponse.StatusCode);
-        }
-
-        [Fact]
-        public void Post_ShouldReturnOK()
-        {
-            // Arrange
-            _mockAvailabilityManager
-                .Setup(_ => _.IsFeatureEnabled(It.IsAny<string>()))
-                .ReturnsAsync(true);
-
-            // Act
-            var response = _homeController.Post();
-            var statusResponse = response as OkResult;
-            
-            // Assert
-            Assert.NotNull(statusResponse);
-            Assert.Equal(200, statusResponse.StatusCode);
-        }
+            _homeController = new HomeController(Mock.Of<ILogger<HomeController>>(), _mockBridgesStructuresService.Object);
+        }       
     }
 }

@@ -16,7 +16,7 @@ namespace bridges_structures_service.Services
     public class BridgesStructuresService : IBridgesStructuresService
     {
         private readonly IVerintServiceGateway _VerintServiceGateway;
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<BridgesStructuresService> _logger;
         private readonly IOptions<BridgesStructuresListConfiguration> _bridgesStructuresConfig;
         private readonly IMailHelper _mailHelper;
@@ -28,7 +28,7 @@ namespace bridges_structures_service.Services
                                         , IMailHelper mailHelper)
         {
             _VerintServiceGateway = verintServiceGateway;
-            configuration = iConfig;
+            _configuration = iConfig;
             _logger = logger;
             _bridgesStructuresConfig = bridgesStructuresConfig;
             _mailHelper = mailHelper;
@@ -67,10 +67,10 @@ namespace bridges_structures_service.Services
 
         private Case CreateCrmCaseObject(BridgesStructuresReport bridgesStructuresReport)
         {
-            var events = _bridgesStructuresConfig.Value.BridgesStructuresConfigurations;
+            List<BridgesStructuresConfiguration> events = _bridgesStructuresConfig.Value.BridgesStructuresConfigurations;
 
             BridgesStructuresConfiguration bridgesStructuresInfo = new BridgesStructuresConfiguration();
-            foreach (var e in events)
+            foreach (BridgesStructuresConfiguration e in events)
             {
                 if (e.AffectedStructure == bridgesStructuresReport.StructureAffected &&
                     e.TypeOfRequest == bridgesStructuresReport.TypeOfRequest)
@@ -80,13 +80,14 @@ namespace bridges_structures_service.Services
                     bridgesStructuresInfo.Code = e.Code;
                     bridgesStructuresInfo.Name = e.Name;
                     bridgesStructuresInfo.Classification = e.Classification;
+                    break;
                 }
             }
 
             Case crmCase = new Case
             {
                 EventCode = int.Parse(bridgesStructuresInfo.Code),
-                EventTitle = configuration.GetSection("CrmCaseSettings").GetSection("EventTitle").Value,
+                EventTitle = _configuration.GetSection("CrmCaseSettings").GetSection("EventTitle").Value,
                 Classification = bridgesStructuresInfo.Classification,
                 Description = GenerateDescription(bridgesStructuresReport),
                 Street = new Street
@@ -119,13 +120,13 @@ namespace bridges_structures_service.Services
 
         private string GenerateDescription(BridgesStructuresReport bridgesStructuresReport)
         {
+            //For code review: Prefer this way or the other
             //StringBuilder description = new StringBuilder();
             //description.Append($"Enquiry Subject: {bridgesStructuresReport.GeneralEnquiry}");
             //description.Append(Environment.NewLine);
             //description.Append($"Damage additional information: {bridgesStructuresReport.Details}");
             //description.Append(Environment.NewLine);
             //description.Append($"Location additional information: {bridgesStructuresReport.FurtherInformation}");
-
             //return description.ToString();
 
             string description = $"Enquiry Subject: {bridgesStructuresReport.GeneralEnquiry} " +
