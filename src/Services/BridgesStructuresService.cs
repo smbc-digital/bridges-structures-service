@@ -10,6 +10,7 @@ using StockportGovUK.NetStandard.Models.Enums;
 using StockportGovUK.NetStandard.Models.Verint;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace bridges_structures_service.Services
@@ -120,20 +121,23 @@ namespace bridges_structures_service.Services
 
         private string GenerateDescription(BridgesStructuresReport bridgesStructuresReport)
         {
-            //For code review: Prefer this way or the other
-            //StringBuilder description = new StringBuilder();
-            //description.Append($"Enquiry Subject: {bridgesStructuresReport.GeneralEnquiry}");
-            //description.Append(Environment.NewLine);
-            //description.Append($"Damage additional information: {bridgesStructuresReport.Details}");
-            //description.Append(Environment.NewLine);
-            //description.Append($"Location additional information: {bridgesStructuresReport.FurtherInformation}");
-            //return description.ToString();
+            StringBuilder description = new StringBuilder();
 
-            string description = $"Enquiry Subject: {bridgesStructuresReport.GeneralEnquiry} " +
-                $"\nDamage additional information: {bridgesStructuresReport.Details} " +
-                $"\nLocation additional information: {bridgesStructuresReport.FurtherInformation}";
+            if (bridgesStructuresReport.TypeOfRequest == "safetyIssue" || bridgesStructuresReport.TypeOfRequest == "roadTrafficAccident")
+            {
+                description.Append($"Damage additional information: {bridgesStructuresReport.Details}");
+                description.Append(Environment.NewLine);
+            }
 
-            return description;
+            if (bridgesStructuresReport.TypeOfRequest == "generalEnquiry")
+            {
+                description.Append($"General Enquiry: {bridgesStructuresReport.GeneralEnquiry}");
+                description.Append(Environment.NewLine);
+            }
+
+            description.Append($"Location additional information: {bridgesStructuresReport.FurtherInformation}");
+            return description.ToString();
+
         }
     }
 }
